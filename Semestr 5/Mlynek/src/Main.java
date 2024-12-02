@@ -50,16 +50,6 @@ class Mill extends GameStateImpl {
             {3,11,19},{5,13,21},{1,9,17},{7,15,23}
     };
 
-    public List<Integer> getJumps(){
-        List<Integer> jumps = new ArrayList<>();
-        for(int i=0;i<24;i++){
-            if(board[i] == 0){
-                jumps.add(i);
-            }
-        }
-        return jumps;
-    }
-
     public Mill() {
         this.board = new byte[24];
         for (int i = 0; i < 24; i++) {
@@ -111,13 +101,13 @@ class Mill extends GameStateImpl {
                 }else {
                     child.whitePawnsCnt++;
                 }
-                child.setMoveName(Integer.toString(i));
                 if (child.isMillFormed(i)) {
                     List<Mill> millSolved = child.solveMill();
-                    children.addAll(millSolved);
                     for(Mill c : millSolved){
                         c.setMoveName(i + " " + c.getMoveName());
+//                        System.out.println("Move name to be added: " + moveName);
                     }
+                    children.addAll(millSolved);
                 } else {
                     child.setMoveName(Integer.toString(i));
                     child.maximizingTurnNow = !child.maximizingTurnNow;
@@ -180,6 +170,7 @@ class Mill extends GameStateImpl {
                             List<Mill> millSolved = child.solveMill();
                             for(Mill c : millSolved){
                                 c.setMoveName(i + " " + j + " " + c.getMoveName());
+//                                System.out.println("Move name to be added: " + moveName);
                             }
                             children.addAll(millSolved);
                         }else {
@@ -196,16 +187,29 @@ class Mill extends GameStateImpl {
 
     public boolean isMillFormed(int idx) {
         if (board[idx] == 0) return false;
-        byte currentPlayer = (byte) (maximizingTurnNow ? 'W' : 'B');
-        for (int[] mill : mills) {
-            if (mill[0] == idx || mill[1] == idx || mill[2] == idx) {
-                if (board[mill[0]] == currentPlayer && board[mill[1]] == currentPlayer && board[mill[2]] == currentPlayer) {
-//                    System.out.println(mill[0] + " " + mill[1] + " " + mill[2]);
-                    return true;
-                }
+        int r = idx / 8;
+        int c = idx % 8;
+
+        if (c % 2 == 0) {
+            if (board[idx] == board[r * 8 + mod(c + 1, 8)] && board[idx] == board[r * 8 + mod(c + 2, 8)]) {
+                return true;
+            }
+            if (board[idx] == board[r * 8 + mod(c - 1, 8)] && board[idx] == board[r * 8 + mod(c - 2, 8)]) {
+                return true;
+            }
+        } else {
+            if (board[idx] == board[r * 8 + mod(c + 1, 8)] && board[idx] == board[r * 8 + mod(c - 1, 8)]) {
+                return true;
+            }
+            if (board[idx] == board[mod(r + 1, 3) * 8 + c] && board[idx] == board[mod(r + 2, 3) * 8 + c]) {
+                return true;
             }
         }
         return false;
+    }
+    private int mod(int x, int y) {
+        int result = x % y;
+        return result < 0 ? result + y : result;
     }
 
     public List<Mill> solveMill() {
@@ -276,7 +280,23 @@ class Mill extends GameStateImpl {
 
 
     public boolean isNonWinTerminal() {
-        return pawnsToPlace == 0 && generateChildren().isEmpty();
+        if(whitePawnsCnt == 3 && blackPawnsCnt == 3 ) {
+            if(pawnsToPlace == 0){
+                System.out.println("Game over! Draw!");
+                return true;
+            }
+        }
+        if (maximizingTurnNow && pawnsToPlace == 0) {
+            if(getPossibleMoves((byte)'W').isEmpty()){
+                return true;
+            }
+        }
+        else if (!maximizingTurnNow && pawnsToPlace == 0) {
+            if(getPossibleMoves((byte)'B').isEmpty()){
+                return true;
+            }
+        }
+        return false;
     }
 
      public String stanPlanszy(){
@@ -291,6 +311,33 @@ class Mill extends GameStateImpl {
         }
         return sb1.toString() + "| " + sb2.toString() + "| ";
     }
+
+    public List<Integer> getJumps(){
+        List<Integer> jumps = new ArrayList<>();
+        for(int i=0;i<24;i++){
+            if(board[i] == 0){
+                jumps.add(i);
+            }
+        }
+        return jumps;
+    }
+
+    public List<GameState> getPossibleMoves(byte currentPlayer){
+        List<GameState> moves = new ArrayList<>();
+        for (int i =0; i<24; i++){
+            if(board[i] == currentPlayer){
+                for(int n: neighbourList[i]){
+                    if(board[n] == 0){
+                        Mill mill = new Mill(this);
+                        mill.board[i] = 0;
+                        mill.board[n] = currentPlayer;
+                        moves.add(mill);
+                    }
+                }
+            }
+        }
+        return moves;
+    }
 }
 
 class heurystyka extends StateFunction {
@@ -299,10 +346,13 @@ class heurystyka extends StateFunction {
         Mill mill = (Mill) s;
         int whitePawns = mill.whitePawnsCnt;
         int blackPawns = mill.blackPawnsCnt;
-        if (blackPawns < 3) {
-            return Double.POSITIVE_INFINITY;
-        } else if (whitePawns < 3) {
-            return Double.NEGATIVE_INFINITY;
+        if (mill.pawnsToPlace <= 0){
+            List<GameState> children = mill.generateChildren();
+            if (blackPawns < 3 || !mill.isMaximizingTurnNow() && children.isEmpty()) {
+                return Double.POSITIVE_INFINITY;
+            } else if (whitePawns < 3 || mill.isMaximizingTurnNow() && children.isEmpty()) {
+                return Double.NEGATIVE_INFINITY;
+            }
         }
         return whitePawns - blackPawns;
     }
@@ -332,93 +382,125 @@ public class Main {
     public static void main(String[] args) {
         GameState mlynek = new Mill();
         GameSearchConfigurator configurator = new GameSearchConfigurator();
-        configurator.setDepthLimit (1.5);
-        GameSearchAlgorithm alg = new MinMax(new Mill(), configurator);
+        configurator.setDepthLimit (3.5);
+        GameSearchAlgorithm alg = new AlphaBetaPruning(new Mill(), configurator);
+        Mill.setHFunction(new heurystyka());
         Scanner scanner = new Scanner(System.in);
 
+//        ((Mill)mlynek).board[1] = 'W';
+//        mlynek.setMaximizingTurnNow(false);
 
-        ((Mill)mlynek).board[0] = 'W';
-        ((Mill)mlynek).board[1] = 'B';
-        ((Mill)mlynek).board[3] = 'W';
-        ((Mill)mlynek).board[5] = 'B';
-        ((Mill)mlynek).board[8] = 'B';
-        ((Mill)mlynek).board[12] = 'W';
-        ((Mill)mlynek).board[13] = 'W';
-        ((Mill)mlynek).board[14] = 'W';
-        ((Mill)mlynek).board[19] = 'W';
-        ((Mill)mlynek).board[21] = 'B';
-        ((Mill)mlynek).board[23] = 'W';
-        ((Mill)mlynek).pawnsToPlace = 0;
-        ((Mill) mlynek).whitePawnsCnt = 7;
-        ((Mill) mlynek).blackPawnsCnt = 4;
-        System.out.println(mlynek);
-        expand(mlynek,6);
+//        ((Mill)mlynek).board[0] = 'W';
+//        ((Mill)mlynek).board[1] = 'B';
+//        ((Mill)mlynek).board[3] = 'W';
+//        ((Mill)mlynek).board[5] = 'B';
+//        ((Mill)mlynek).board[8] = 'B';
+//        ((Mill)mlynek).board[12] = 'W';
+//        ((Mill)mlynek).board[13] = 'W';
+//        ((Mill)mlynek).board[14] = 'W';
+//        ((Mill)mlynek).board[19] = 'W';
+//        ((Mill)mlynek).board[21] = 'B';
+//        ((Mill)mlynek).board[23] = 'W';
+//        ((Mill)mlynek).pawnsToPlace = 0;
+//        ((Mill) mlynek).whitePawnsCnt = 7;
+//        ((Mill) mlynek).blackPawnsCnt = 4;
+//        expand(mlynek,6);
+//        System.exit(0);
 
+        boolean aiFirstMove = true;
 
-//        while (!mlynek.isWinTerminal() && !mlynek.isNonWinTerminal()) {
-//            System.out.println("Aktualny stan planszy: \n" + mlynek.toString());
-//            // Tura gracza
-//            System.out.println("Twoja tura: ");
-//            String ruch = scanner.nextLine();
-//            List<GameState> children = mlynek.generateChildren();
-//            boolean validMove = false;
-//            for (GameState child : children) {
-//                if (ruch.equals(child.getMoveName())) {
-//                    System.out.println(child.getMoveName());
-//                    mlynek = child;
-//                    validMove = true;
-//                    break;
-//                }
-//            }
-//
-//            // Sprawdzenie poprawności ruchu
-//            if (!validMove) {
-//                System.out.println("Błędny ruch, spróbuj ponownie.");
-//                continue;
-//            }
-//
-//            if (((Mill) mlynek).isMillFormed(Integer.parseInt(ruch))) {
-//                children = new ArrayList<>(((Mill) mlynek).solveMill());
-//                mlynek = children.get(0);
-//            }else{
-//                mlynek.setMaximizingTurnNow(!mlynek.isMaximizingTurnNow());
-//            }
-//
-//            // Sprawdź, czy gra się zakończyła po ruchu gracza
-//            if (mlynek.isWinTerminal() || mlynek.isNonWinTerminal()) {
-//                break;
-//            }
-//            System.out.println("Aktualny stan planszy: \n" + mlynek.toString());
-//
-//            // Tura przeciwnika
-//            System.out.println("Tura przeciwnika...");
-//            children = mlynek.generateChildren();
-//            alg.setInitial(mlynek);
-//            alg.execute();
-//            String bestMove = alg.getFirstBestMove();
-//            System.out.println("Przeciwnik wybrał ruch: " + bestMove);
-//            for (GameState child : children) {
-//                if (bestMove.equals(child.getMoveName())) {
-//                    mlynek = child;
-//                    break;
-//                }
-//            }
-//            if (((Mill) mlynek).isMillFormed(Integer.parseInt(bestMove))) {
-//                children = new ArrayList<>(((Mill) mlynek).solveMill());
-//                mlynek = children.get(0);
-//            }else{
-//                mlynek.setMaximizingTurnNow(!mlynek.isMaximizingTurnNow());
-//            }
-//        }
-//
-//        if (mlynek.isWinTerminal()) {
-//            System.out.println("Koniec gry! Wygrałeś!");
-//        } else if (mlynek.isNonWinTerminal()) {
-//            System.out.println("Koniec gry! Przegrałeś.");
-//        } else {
-//            System.out.println("Koniec gry! Remis.");
-//        }
-//
-//        scanner.close();
+        if(!aiFirstMove) {
+            while (!mlynek.isWinTerminal() && !mlynek.isNonWinTerminal()) {
+                System.out.println("Aktualny stan planszy: \n" + mlynek);
+                // Tura gracza
+                System.out.println("Twoja tura: ");
+                String ruch = scanner.nextLine();
+                List<GameState> children = mlynek.generateChildren();
+                boolean validMove = false;
+                for (GameState child : children) {
+                    if (ruch.equals(child.getMoveName())) {
+                        mlynek = child;
+                        validMove = true;
+                        break;
+                    }
+                }
+                // Sprawdzenie poprawności ruchu
+                if (!validMove) {
+                    System.out.println("Błędny ruch, spróbuj ponownie.");
+                    continue;
+                }
+                // Sprawdź, czy gra się zakończyła po ruchu gracza
+                if (mlynek.isWinTerminal() || mlynek.isNonWinTerminal()) {
+                    break;
+                }
+                System.out.println("Aktualny stan planszy: \n" + mlynek.toString());
+
+                // Tura przeciwnika
+                System.out.println("Tura Komputera...");
+                children = mlynek.generateChildren();
+                alg.setInitial(mlynek);
+                alg.execute();
+                String bestMove = alg.getFirstBestMove();
+                System.out.println("Komputer wybrał ruch: " + bestMove);
+                for (GameState child : children) {
+                    if (bestMove.equals(child.getMoveName())) {
+                        mlynek = child;
+                        break;
+                    }
+                }
+            }
+            if (mlynek.isMaximizingTurnNow()) {
+                System.out.println("Koniec gry! Wygrałeś!");
+            } else {
+                System.out.println("Koniec gry! Przegrałeś!");
+            }
+        }
+        else{
+            while (!mlynek.isWinTerminal() && !mlynek.isNonWinTerminal()) {
+                List<GameState> children = mlynek.generateChildren();
+                System.out.println("Aktualny stan planszy: \n" + mlynek);
+                // Tura przeciwnika
+                if(mlynek.isMaximizingTurnNow()){
+                    System.out.println("Tura komputera...");
+                    children = mlynek.generateChildren();
+                    alg.setInitial(mlynek);
+                    alg.execute();
+                    String bestMove = alg.getFirstBestMove();
+                    System.out.println("Komputer wybrał ruch: " + bestMove);
+                    for (GameState child : children) {
+                        if (bestMove.equals(child.getMoveName())) {
+                            mlynek = child;
+                            break;
+                        }
+                    }
+//                    System.out.println("Aktualny stan planszy: \n" + mlynek.toString());
+                }else {
+                    // Tura gracza
+                    System.out.println("Twoja tura: ");
+                    String ruch = scanner.nextLine();
+                    boolean validMove = false;
+                    for (GameState child : children) {
+                        if (ruch.equals(child.getMoveName())) {
+                            mlynek = child;
+                            validMove = true;
+                            break;
+                        }
+                    }
+                    if (!validMove) {
+                        System.out.println("Błędny ruch, spróbuj ponownie.");
+                        continue;
+                    }
+                    if (mlynek.isWinTerminal() || mlynek.isNonWinTerminal()) {
+                        break;
+                    }
+                }
+            }
+            if (mlynek.isMaximizingTurnNow()) {
+                System.out.println("Koniec gry! Wygrałeś!");
+            } else {
+                System.out.println("Koniec gry! Przegrałeś!");
+            }
+        }
+        scanner.close();
     }
 }
