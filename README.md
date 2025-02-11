@@ -12,6 +12,7 @@ Hi! I'm Sebastian Marcinowski, a third-year computer science student at the West
   <li>PHP 🌐</li>
   <li>HTML5 & CSS 🌎</li>
   <li>JavaScript 📜</li>
+  <li>Java ☕</li>
 </ul>
 <b>Databases:</b>
 <ul>
