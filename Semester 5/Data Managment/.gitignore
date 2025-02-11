@@ -1,0 +1,37 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Ignorowanie katalogu cache Doctrine
+/var/cache/
+
+# Ignorowanie plików logów
+/var/logs/
+/var/log/
+
+# Ignorowanie plików generowanych przez Doctrine
+/var/doctrine/
+/var/tmp/
+
+# Ignorowanie plików baz danych SQLite (jeśli używane)
+*.sqlite
+*.sqlite3
+
+# Ignorowanie plików migracji (jeśli nie są wersjonowane)
+/migrations/
+
+# Ignorowanie plików konfiguracyjnych generowanych dynamicznie
+/config/jwt/
+/config/secrets/
+
+# Ignorowanie zależności vendor (jeśli używany Composer)
+/vendor/
+
+# Pliki IDE i edytorów
+/.idea/
+/.vscode/
+*.iml
