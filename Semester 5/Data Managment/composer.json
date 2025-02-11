@@ -1,0 +1,17 @@
+{
+    "name": "smh2k/zi2",
+    "autoload": {
+        "psr-4": {
+            "Smh2k\\Zi2\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ms53692",
+            "email": "ms53692@zut.edu.pl"
+        }
+    ],
+    "require": {
+        "doctrine/dbal": "^4.2"
+    }
+}

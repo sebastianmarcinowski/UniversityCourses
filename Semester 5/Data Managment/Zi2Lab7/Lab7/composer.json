@@ -1,0 +1,17 @@
+{
+    "name": "smh2k/lab7",
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        },
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "doctrine/annotations": "^2.0.0",
+        "symfony/cache": "^5.0",
+        "doctrine/orm": "^2.11.0"
+    }
+
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MessDetectorOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCSFixerOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCodeSnifferOptionsConfiguration">
+    <option name="highlightLevel" value="WARNING" />
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/var-exporter" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-intl-grapheme" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/cache" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/service-contracts" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/string" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-php73" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/composer" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/collections" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/annotations" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/orm" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/persistence" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/doctrine/common" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/Zi2Lab7/Lab7/vendor/symfony/cache-contracts" />
+    </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
+  <component name="PhpStanOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PsalmOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+</project>
