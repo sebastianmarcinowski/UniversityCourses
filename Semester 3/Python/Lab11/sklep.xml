@@ -1,0 +1,15 @@
+<sklep>
+    <items>
+        <item name="puccini" type="torebka">model56V</item>
+        <item name="sony" type="konsola">PlayStation3</item>
+        <item name="lasocki" type="torebka">typ26J</item>
+        <item name="puccini" type="portfel">model6H</item>
+        <vitem name="microsoft" type="game">Forza</vitem>
+        <item name="sony" type="konsola">PlayStation2</item>
+        <item name="microsoft" type="konsola">XBox</item>
+        <vitem name="oriley" type="ebook">Python3</vitem>
+        <item name="philips" type="sluchawki">Bass365</item>
+        <item name="witchen" type="torebka">classicJ</item>
+        <vitem name="Helion" type="audiobook">R</vitem>    
+    </items>
+</sklep>
