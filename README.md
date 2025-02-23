@@ -1,1 +1,1 @@
-This repository contains assignments and projects completed at West Pomeranian University of Technology (ZUT)
+<b>This repository contains assignments and projects completed at West Pomeranian University of Technology (ZUT)</b>
